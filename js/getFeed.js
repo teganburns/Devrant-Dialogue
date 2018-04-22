@@ -25,7 +25,7 @@ const devrant_api_users_authToken = 'https://devrant.com/api/users/auth-token'; 
 
 const devrant_feed = "https://devrant.com/feed/";
 const devrant_feed_algo = "https://devrant.com/feed/algo";
-const devrant_feed_recent = "https://devrant.com/feed/recent/";
+const devrant_feed_recent = "https://devrant.com/feed/recent";
 
 const devrant_feed_top_day = "https://devrant.com/feed/top/day/rants";
 const devrant_feed_top_week = "https://devrant.com/feed/top/week/rants";
@@ -72,10 +72,31 @@ page.open( feed_type, function ( status ) {
     } else {
         console.log( 'OK' );
         var res = page.evaluate(function() {
+
+            // content.text_content
+            // content.comments
+            // content.votes
+            // content.tags Array
+            // content.user?
+
+
+            var post = Array();
+
             var rants_array = Array();
-            var rants = document.getElementsByClassName('rantlist-title-text');
+            var rants = document.getElementsByClassName('rantlist-content-col');
+            //var rants = document.getElementsByClassName('rantlist-title-text');
+            var votecount = document.getElementsByClassName('votecount');
+
             for ( var i = 0; i < rants.length; i++ ) {
-                rants_array.push( rants[i].textContent );
+                var content = new Object();
+                content.vote = votecount[i].innerText;
+                content.text_content = rants[i].children[0].innerText;
+                content.tag = Array();
+                for ( var j = 0; j < rants[i].children[2].children.length; j++ ) {
+                    content.tag.push( rants[i].children[2].children[j].innerText );
+                }
+
+                rants_array.push( content );
             }
             return rants_array;
         });
